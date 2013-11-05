@@ -109,7 +109,6 @@ class EC2Provider(BaseProvider):
         """
 
         servers = list()
-        server = dict()
 
         reservation = self.conn.run_instances(image_id, int(number), 
                                         int(number), keypair, security_groups,
@@ -126,6 +125,7 @@ class EC2Provider(BaseProvider):
             if instance.ip_address == None:
                 self.associate_public_ip(instance.id)
             instance.update()
+            server = dict()
             server['id'] = instance.id
             server['private_ip_address'] = instance.private_ip_address
             server['ip_address'] = instance.ip_address
