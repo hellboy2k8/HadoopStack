@@ -109,6 +109,7 @@ class EC2Provider(BaseProvider):
         """
 
         servers = list()
+        role = name.split('-')[-1]
 
         reservation = self.conn.run_instances(image_id, int(number), 
                                         int(number), keypair, security_groups,
@@ -122,15 +123,16 @@ class EC2Provider(BaseProvider):
                 instance.update()
 
         for instance in reservation.instances:
-            if instance.ip_address == None:
-                self.associate_public_ip(instance.id)
+            if role == 'master':
+                if instance.ip_address == None:
+                    self.associate_public_ip(instance.id)
             instance.update()
             server = dict()
             server['id'] = instance.id
             server['private_ip_address'] = instance.private_ip_address
             server['ip_address'] = instance.ip_address
             server['flavor'] = instance.instance_type
-            server['role'] = name.split('-')[-1]
+            server['role'] = role
             servers.append(server)
 
         return servers

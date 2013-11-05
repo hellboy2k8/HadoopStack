@@ -123,10 +123,16 @@ def configure_cluster(data, user, general_config):
                 return False
 
         elif node['role'] == 'slave':
-            slave_public_ip = current_app.cloud.associate_public_ip(node['id'])
+            if node['ip_address'] == None:
+                slave_public_ip = current_app.cloud.associate_public_ip(node['id'])
+
+            else:
+                slave_public_ip = node['ip_address']
             configure_slave(slave_public_ip, key_location, job_name, user,
                                 general_config['chef_server_hostname'],
                                 general_config['chef_server_ip'])
-            current_app.cloud.release_public_ip(slave_public_ip)
+
+            if node['ip_address'] == None:
+                current_app.cloud.release_public_ip(slave_public_ip)
 
     return True
